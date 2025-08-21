@@ -1,0 +1,399 @@
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كويز الأمان المصرفي - المحامي ماجد الحلو</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #90EE90, #98FB98);
+            min-height: 100vh;
+            direction: rtl;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2E8B57, #3CB371);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .author {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 15px;
+        }
+        
+        .quiz-container {
+            padding: 40px;
+        }
+        
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #3CB371;
+            display: none;
+        }
+        
+        .question-card.active {
+            display: block;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .question-number {
+            background: #3CB371;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            color: #2E8B57;
+            font-weight: bold;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .option:hover {
+            border-color: #3CB371;
+            background: #f0fff0;
+            transform: translateX(-5px);
+        }
+        
+        .option.selected {
+            border-color: #3CB371;
+            background: #e8f5e8;
+        }
+        
+        .option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .option.wrong {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .next-btn {
+            background: linear-gradient(45deg, #3CB371, #2E8B57);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.4);
+        }
+        
+        .next-btn.show {
+            display: inline-block;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            background: linear-gradient(45deg, #3CB371, #2E8B57);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .result-card {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .result-card.show {
+            display: block;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        .score {
+            font-size: 3rem;
+            color: #3CB371;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(45deg, #3CB371, #2E8B57);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .explanation {
+            background: #e8f5e8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #3CB371;
+            display: none;
+        }
+        
+        .explanation.show {
+            display: block;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        
+        .explanation h4 {
+            color: #2E8B57;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ كويز الأمان المصرفي</h1>
+            <p>اختبر معلوماتك حول الحماية من الاحتيال المصرفي</p>
+            <div class="author">من إعداد: المحامي ماجد الحلو ⚖️</div>
+        </div>
+        
+        <div class="quiz-container">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            
+            <!-- Question 1 -->
+            <div class="question-card active" data-question="1">
+                <div class="question-number">1</div>
+                <div class="question-text">أي علامة تُعتبر إشارة قوية على أن الرابط احتيالي؟</div>
+                <div class="options">
+                    <div class="option" data-answer="wrong">أ) نطاق رسمي معروف</div>
+                    <div class="option" data-answer="correct">ب) رابط مختصر عشوائي</div>
+                    <div class="option" data-answer="wrong">ج) وجود علامة القفل</div>
+                </div>
+                <div class="explanation">
+                    <h4>💡 التفسير:</h4>
+                    <p>الروابط المختصرة العشوائية تخفي الوجهة الحقيقية للموقع، مما يجعلها أداة مفضلة للمحتالين لإخفاء المواقع المشبوهة وخداع المستخدمين.</p>
+                </div>
+                <button class="next-btn" onclick="nextQuestion()">السؤال التالي ⬅️</button>
+            </div>
+            
+            <!-- Question 2 -->
+            <div class="question-card" data-question="2">
+                <div class="question-number">2</div>
+                <div class="question-text">أول إجراء صحيح عند اكتشاف خصم غير مصرّح به؟</div>
+                <div class="options">
+                    <div class="option" data-answer="wrong">أ) انتظار إشعار آخر</div>
+                    <div class="option" data-answer="correct">ب) تجميد البطاقة فوراً</div>
+                    <div class="option" data-answer="wrong">ج) حذف الرسالة فقط</div>
+                </div>
+                <div class="explanation">
+                    <h4>💡 التفسير:</h4>
+                    <p>السرعة في التعامل مع العمليات المشبوهة أمر بالغ الأهمية. تجميد البطاقة فوراً يمنع المحتالين من إجراء المزيد من العمليات غير المصرح بها.</p>
+                </div>
+                <button class="next-btn" onclick="nextQuestion()">السؤال التالي ⬅️</button>
+            </div>
+            
+            <!-- Question 3 -->
+            <div class="question-card" data-question="3">
+                <div class="question-number">3</div>
+                <div class="question-text">ما المستندات التي تقوّي اعتراضك لدى البنك؟</div>
+                <div class="options">
+                    <div class="option" data-answer="correct">أ) لقطات الشاشة</div>
+                    <div class="option" data-answer="wrong">ب) عقد التوصيل</div>
+                    <div class="option" data-answer="wrong">ج) لا شيء</div>
+                </div>
+                <div class="explanation">
+                    <h4>💡 التفسير:</h4>
+                    <p>لقطات الشاشة تعتبر أدلة بصرية قوية تساعد في توثيق العمليات المشبوهة والرسائل الاحتيالية، مما يقوي موقفك القانوني أمام البنك.</p>
+                </div>
+                <button class="next-btn" onclick="showResults()">عرض النتائج 🏆</button>
+            </div>
+            
+            <!-- Results -->
+            <div class="result-card" id="results">
+                <h2>🎉 انتهيت من الكويز!</h2>
+                <div class="score" id="finalScore">0/3</div>
+                <p id="resultMessage"></p>
+                <div style="margin: 30px 0;">
+                    <h3>🛡️ نصائح إضافية للحماية:</h3>
+                    <ul style="text-align: right; margin: 20px 0; line-height: 2;">
+                        <li>تفعيل التنبيهات الفورية للعمليات المصرفية</li>
+                        <li>عدم النقر على روابط في الرسائل المشبوهة</li>
+                        <li>التحقق من عناوين المواقع بعناية</li>
+                        <li>الاتصال بالبنك مباشرة عند الشك</li>
+                        <li>استخدام كلمات مرور قوية ومختلفة</li>
+                    </ul>
+                </div>
+                <button class="restart-btn" onclick="restartQuiz()">إعادة الكويز 🔄</button>
+                <div style="margin-top: 30px; padding: 20px; background: #f0fff0; border-radius: 10px;">
+                    <p><strong>⚖️ من إعداد: المحامي ماجد الحلو</strong></p>
+                    <p>متخصص في قضايا الأمان المصرفي والحماية من الاحتيال</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let score = 0;
+        let totalQuestions = 3;
+        let answered = false;
+
+        function selectOption(element) {
+            if (answered) return;
+            
+            const options = element.parentNode.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            // Show correct/wrong answers
+            setTimeout(() => {
+                options.forEach(opt => {
+                    if (opt.dataset.answer === 'correct') {
+                        opt.classList.add('correct');
+                        if (opt === element) score++;
+                    } else {
+                        opt.classList.add('wrong');
+                    }
+                });
+                
+                // Show explanation and next button
+                const explanation = document.querySelector(`[data-question="${currentQuestion}"] .explanation`);
+                const nextBtn = document.querySelector(`[data-question="${currentQuestion}"] .next-btn`);
+                explanation.classList.add('show');
+                nextBtn.classList.add('show');
+                
+                answered = true;
+                updateProgress();
+            }, 500);
+        }
+
+        function nextQuestion() {
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+            currentQuestion++;
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('active');
+            answered = false;
+        }
+
+        function showResults() {
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+            document.getElementById('results').classList.add('show');
+            
+            document.getElementById('finalScore').textContent = `${score}/${totalQuestions}`;
+            
+            let message = '';
+            if (score === totalQuestions) {
+                message = '🏆 ممتاز! لديك معرفة ممتازة بالأمان المصرفي';
+            } else if (score >= totalQuestions * 0.7) {
+                message = '👍 جيد جداً! تحتاج لمراجعة بعض النقاط';
+            } else {
+                message = '📚 يُنصح بمراجعة قواعد الأمان المصرفي';
+            }
+            
+            document.getElementById('resultMessage').textContent = message;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 1;
+            score = 0;
+            answered = false;
+            
+            // Reset all questions
+            document.querySelectorAll('.question-card').forEach(card => {
+                card.classList.remove('active');
+                card.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected', 'correct', 'wrong');
+                });
+                card.querySelector('.explanation').classList.remove('show');
+                card.querySelector('.next-btn').classList.remove('show');
+            });
+            
+            document.querySelector('[data-question="1"]').classList.add('active');
+            document.getElementById('results').classList.remove('show');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        // Add click event listeners to all options
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                selectOption(this);
+            });
+        });
+
+        // Initialize progress
+        updateProgress();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'972b4693421c5928',t:'MTc1NTc5MTMxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
